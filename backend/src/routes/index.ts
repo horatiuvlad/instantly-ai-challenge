@@ -1,10 +1,105 @@
 import type { FastifyPluginAsync } from 'fastify';
-import { DB, type Email } from '../db/index';
+import { DB, type Email } from '../db/index.js';
+import OpenAI from 'openai';
+import 'dotenv/config';
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 const routes: FastifyPluginAsync = async (fastify): Promise<void> => {
   // Health check
   fastify.get('/ping', async () => {
     return 'pong\n';
+  });
+
+  // AI Email Generation
+  fastify.post<{ Body: { prompt: string } }>('/ai/generate-email', async (request, reply) => {
+    try {
+      const { prompt } = request.body;
+      
+      if (!prompt) {
+        reply.status(400).send({ error: 'Prompt is required' });
+        return;
+      }
+
+      // Router assistant to classify the request
+      const routerResponse = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a router assistant. Analyze the user's email request and classify it as either "sales" or "follow-up".
+
+Sales: Generate sales emails, business proposals, product pitches, meeting requests for business purposes.
+Follow-up: Generate follow-up emails, check-ins, reminders, or status updates.
+
+Respond with ONLY one word: "sales" or "follow-up"`
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.1,
+      });
+
+      const classification = routerResponse.choices[0]?.message?.content?.toLowerCase().trim();
+      
+      let systemPrompt = '';
+      if (classification === 'sales') {
+        systemPrompt = `You are a sales email assistant. Generate professional, concise sales emails.
+- Keep emails under 40 words total (readable in under 10 seconds)
+- Use 7-10 words per sentence maximum
+- Be direct and compelling
+- Include a clear call to action
+- Return JSON with "subject" and "body" fields only`;
+      } else {
+        systemPrompt = `You are a follow-up email assistant. Generate polite, professional follow-up emails.
+- Keep tone friendly but professional  
+- Be concise and respectful of recipient's time
+- Include appropriate context
+- Return JSON with "subject" and "body" fields only`;
+      }
+
+      // Generate the email content
+      const emailResponse = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: systemPrompt
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+      });
+
+      const emailContent = emailResponse.choices[0]?.message?.content;
+      
+      try {
+        const parsedContent = JSON.parse(emailContent || '{}');
+        return {
+          subject: parsedContent.subject || '',
+          body: parsedContent.body || '',
+          type: classification
+        };
+      } catch (parseError) {
+        // Fallback if JSON parsing fails
+        return {
+          subject: `Re: ${prompt}`,
+          body: emailContent || '',
+          type: classification
+        };
+      }
+
+    } catch (error) {
+      fastify.log.error(error);
+      reply.status(500).send({ error: 'Failed to generate email' });
+    }
   });
 
   // Get all emails

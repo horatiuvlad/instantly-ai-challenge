@@ -7,15 +7,16 @@ const fastify = Fastify({
 
 // Register CORS plugin
 fastify.register(import('@fastify/cors'), {
-  origin: ['http://localhost:3000'], // Allow frontend to make requests
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'], // Allow frontend to make requests
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 });
 
 fastify.register(routes);
 
 const port = Number(process.env.PORT ?? 3001);
 
-fastify.listen({ port }, (err, address) => {
+fastify.listen({ port, host: '0.0.0.0' }, (err, address) => {
   if (err) {
     fastify.log.error(err);
     process.exit(1);
