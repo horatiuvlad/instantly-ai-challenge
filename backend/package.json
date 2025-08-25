@@ -8,13 +8,17 @@
   "version": "1.0.0",
   "main": "index.js",
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "typescript": "^5.5.4",
+    "tsx": "^4.15.7",
+    "@types/node": "^22.5.4"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "migrate": "knex migrate:latest",
-    "start": "node index.js",
-    "dev": "PORT=3001 nodemon index.js"
+    "build": "tsc -p .",
+    "start": "node dist/index.js",
+    "dev": "PORT=3001 tsx watch index.ts"
   },
   "author": "",
   "license": "ISC",
