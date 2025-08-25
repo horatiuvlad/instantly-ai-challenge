@@ -1,8 +1,14 @@
 import Fastify from 'fastify';
-import routes from './src/routes/index';
+import routes from './src/routes/index.js';
 
 const fastify = Fastify({
   logger: true,
+});
+
+// Register CORS plugin
+fastify.register(import('@fastify/cors'), {
+  origin: ['http://localhost:3000'], // Allow frontend to make requests
+  credentials: true,
 });
 
 fastify.register(routes);
