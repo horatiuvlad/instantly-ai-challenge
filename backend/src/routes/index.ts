@@ -140,6 +140,54 @@ Respond with ONLY one word: "sales" or "follow-up"`
         return;
       }
 
+      // Email validation function
+      const validateEmail = (email: string): boolean => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email.trim());
+      };
+
+      const validateEmailField = (emails: string): { isValid: boolean; invalidEmails: string[] } => {
+        if (!emails || emails.trim() === '') {
+          return { isValid: true, invalidEmails: [] };
+        }
+        
+        const emailList = emails.split(',').map(email => email.trim());
+        const invalidEmails = emailList.filter(email => email && !validateEmail(email));
+        
+        return {
+          isValid: invalidEmails.length === 0,
+          invalidEmails
+        };
+      };
+
+      // Validate TO field (required)
+      if (!validateEmail(emailData.to)) {
+        reply.status(400).send({ error: 'Invalid email address in TO field' });
+        return;
+      }
+
+      // Validate CC field if provided
+      if (emailData.cc && emailData.cc.trim()) {
+        const ccValidation = validateEmailField(emailData.cc);
+        if (!ccValidation.isValid) {
+          reply.status(400).send({ 
+            error: `Invalid email addresses in CC field: ${ccValidation.invalidEmails.join(', ')}` 
+          });
+          return;
+        }
+      }
+
+      // Validate BCC field if provided
+      if (emailData.bcc && emailData.bcc.trim()) {
+        const bccValidation = validateEmailField(emailData.bcc);
+        if (!bccValidation.isValid) {
+          reply.status(400).send({ 
+            error: `Invalid email addresses in BCC field: ${bccValidation.invalidEmails.join(', ')}` 
+          });
+          return;
+        }
+      }
+
       const [emailId] = await DB.createEmail(emailData);
       const createdEmail = await DB.getEmailById(emailId);
       

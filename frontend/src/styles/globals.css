@@ -1,3 +1,17 @@
+:root {
+    --black: #000000;
+    --black-3: #0f0f0f;
+    --royal-blue: #1179fc;
+    --white: #ffffff;
+    --black-4: #0f0f0f99;
+    --black-2: #050917;
+    --white-2: #ffffff40;
+    --black-5: #0f0f0fa6;
+    --violet: #dc82fc;
+    --violet-2: #dd83fc;
+    --white-smoke: #f6f8fb;
+}
+
 .sidebar {
     display: flex;
     flex-direction: column;
@@ -6,29 +20,49 @@
     top: 0;
     left: 0;
     height: 100%;
-    width: 90px;
-    color: #fff;
+    width: 60px;
+    color: var(--black-3);
     padding-top: 20px;
     padding-left: 10px;
     padding-right: 10px;
     box-sizing: border-box;
-    border-right: 1px solid #e0e0e0;
+    border-right: 1px solid var(--black-4);
     z-index: 1;
-    background-color: white;
-    gap: 10px;
+    background-color: var(--white-smoke);
+    gap: 15px;
 
     svg {
-        color: gray;
-        width: 30px;
-        height: 30px;
+        color: var(--royal-blue);
+        width: 28px;
+        height: 28px;
+        transition: color 0.2s ease;
+    }
+
+    a {
+        padding: 8px;
+        border-radius: 8px;
+        transition: background-color 0.2s ease;
+    }
+
+    a:hover {
+        background-color: var(--white-2);
+    }
+
+    a:hover svg {
+        color: var(--violet);
     }
 }
 
 body {
     padding: 0;
     margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 main {
-    margin-left: 90px;
+    margin-left: 60px;
 }

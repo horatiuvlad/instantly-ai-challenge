@@ -16,7 +16,7 @@ fastify.register(routes);
 
 const port = Number(process.env.PORT ?? 3001);
 
-fastify.listen({ port, host: '0.0.0.0' }, (err, address) => {
+fastify.listen({ port, host: '127.0.0.1' }, (err, address) => {
   if (err) {
     fastify.log.error(err);
     process.exit(1);

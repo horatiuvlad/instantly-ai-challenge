@@ -21,6 +21,7 @@ import {
 import { EmailService } from '../services/emailService';
 import { CreateEmailData } from '../types/email';
 import { colors } from '../theme';
+import { validateEmail, validateEmailField } from '../utils/emailValidation';
 
 interface ComposeEmailModalProps {
   open: boolean;
@@ -46,6 +47,46 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
+
+  const validateFormData = (): boolean => {
+    const errors: {[key: string]: string} = {};
+    
+    // Validate required 'to' field
+    if (!formData.to.trim()) {
+      errors.to = 'To field is required';
+    } else if (!validateEmail(formData.to)) {
+      errors.to = 'Please enter a valid email address';
+    }
+    
+    // Validate CC field if provided
+    if (formData.cc && formData.cc.trim()) {
+      const ccValidation = validateEmailField(formData.cc);
+      if (!ccValidation.isValid) {
+        errors.cc = `Invalid email addresses: ${ccValidation.invalidEmails.join(', ')}`;
+      }
+    }
+    
+    // Validate BCC field if provided
+    if (formData.bcc && formData.bcc.trim()) {
+      const bccValidation = validateEmailField(formData.bcc);
+      if (!bccValidation.isValid) {
+        errors.bcc = `Invalid email addresses: ${bccValidation.invalidEmails.join(', ')}`;
+      }
+    }
+    
+    // Validate subject and body
+    if (!formData.subject.trim()) {
+      errors.subject = 'Subject is required';
+    }
+    
+    if (!formData.body.trim()) {
+      errors.body = 'Email body is required';
+    }
+    
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleInputChange = (field: keyof CreateEmailData) => (
     event: React.ChangeEvent<HTMLInputElement>
@@ -54,6 +95,15 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
       ...prev,
       [field]: event.target.value,
     }));
+    
+    // Clear validation error for this field when user starts typing
+    if (validationErrors[field]) {
+      setValidationErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
   };
 
   const handleAIGenerate = async () => {
@@ -79,8 +129,7 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
   };
 
   const handleSendEmail = async () => {
-    if (!formData.to || !formData.subject || !formData.body) {
-      setError('Please fill in all required fields (To, Subject, Body)');
+    if (!validateFormData()) {
       return;
     }
 
@@ -109,6 +158,7 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
     setIsAIMode(false);
     setAIPrompt('');
     setError(null);
+    setValidationErrors({});
     onClose();
   };
 
@@ -129,7 +179,7 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center',
-        bgcolor: colors.surface,
+        bgcolor: colors.whiteSmoke,
         borderBottom: 1,
         borderColor: 'divider',
       }}>
@@ -153,6 +203,8 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
             onChange={handleInputChange('to')}
             fullWidth
             placeholder="recipient@example.com"
+            error={!!validationErrors.to}
+            helperText={validationErrors.to}
           />
 
           <TextField
@@ -161,6 +213,8 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
             onChange={handleInputChange('cc')}
             fullWidth
             placeholder="cc@example.com"
+            error={!!validationErrors.cc}
+            helperText={validationErrors.cc || "Separate multiple emails with commas"}
           />
 
           <TextField
@@ -169,6 +223,8 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
             onChange={handleInputChange('bcc')}
             fullWidth
             placeholder="bcc@example.com"
+            error={!!validationErrors.bcc}
+            helperText={validationErrors.bcc || "Separate multiple emails with commas"}
           />
 
           <TextField
@@ -177,6 +233,8 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
             onChange={handleInputChange('subject')}
             fullWidth
             placeholder="Email subject"
+            error={!!validationErrors.subject}
+            helperText={validationErrors.subject}
           />
 
           <TextField
@@ -187,14 +245,16 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
             multiline
             rows={8}
             placeholder="Email content..."
+            error={!!validationErrors.body}
+            helperText={validationErrors.body}
           />
 
           <Collapse in={isAIMode}>
             <Box sx={{ 
               p: 2, 
-              bgcolor: colors.surface, 
+              bgcolor: colors.whiteSmoke, 
               borderRadius: 2,
-              border: `1px solid ${colors.primary}`,
+              border: `1px solid ${colors.royalBlue}`,
             }}>
               <TextField
                 label="Describe what the email should be about"
@@ -222,7 +282,7 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
                   disabled={isGenerating || !aiPrompt.trim()}
                   variant="contained"
                   startIcon={isGenerating ? <CircularProgress size={16} /> : <AIIcon />}
-                  sx={{ bgcolor: colors.primary }}
+                  sx={{ bgcolor: colors.royalBlue }}
                 >
                   {isGenerating ? 'Generating...' : 'Generate'}
                 </Button>
@@ -235,7 +295,7 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
       <DialogActions sx={{ 
         px: 3, 
         pb: 3, 
-        bgcolor: colors.surface,
+        bgcolor: colors.whiteSmoke,
         justifyContent: 'space-between',
       }}>
         <Button
@@ -243,10 +303,10 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
           disabled={isAIMode || isGenerating || isSending}
           startIcon={<AIIcon />}
           sx={{ 
-            color: colors.primary,
-            border: `1px solid ${colors.primary}`,
+            color: colors.royalBlue,
+            border: `1px solid ${colors.royalBlue}`,
             '&:hover': {
-              bgcolor: `${colors.primary}10`,
+              bgcolor: `${colors.royalBlue}10`,
             }
           }}
         >
@@ -263,9 +323,9 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
           <Button
             onClick={handleSendEmail}
             variant="contained"
-            disabled={isGenerating || isSending || !formData.to || !formData.subject || !formData.body}
+            disabled={isGenerating || isSending}
             startIcon={isSending ? <CircularProgress size={16} /> : <SendIcon />}
-            sx={{ bgcolor: colors.primary }}
+            sx={{ bgcolor: colors.royalBlue }}
           >
             {isSending ? 'Sending...' : 'Send'}
           </Button>

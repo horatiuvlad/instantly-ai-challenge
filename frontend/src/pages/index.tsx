@@ -36,8 +36,8 @@ export default function Home() {
       const emailsData = await EmailService.getEmails();
       setEmails(emailsData);
       
-      // Auto-select the first email if none selected
-      if (emailsData.length > 0 && !selectedEmail) {
+      // Auto-select the first email if none selected and we have emails
+      if (emailsData.length > 0) {
         setSelectedEmail(emailsData[0]);
       }
     } catch (error) {
@@ -107,26 +107,27 @@ export default function Home() {
     <Box sx={{ 
       display: 'flex', 
       height: '100vh', 
-      bgcolor: colors.background,
+      bgcolor: colors.white,
+      marginLeft: '60px', // Account for the left sidebar
     }}>
-      {/* Sidebar */}
+      {/* Email Sidebar */}
       <Paper sx={{ 
         width: 400, 
         height: '100vh',
         borderRadius: 0,
-        bgcolor: colors.surface,
-        borderRight: `1px solid ${colors.textSecondary}20`,
+        bgcolor: colors.whiteSmoke,
+        borderRight: `1px solid ${colors.black4}`,
         display: 'flex',
         flexDirection: 'column',
       }}>
         <Box sx={{ 
           p: 2, 
-          borderBottom: `1px solid ${colors.textSecondary}20`,
+          borderBottom: `1px solid ${colors.black4}`,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
-          <Typography variant="h6" sx={{ color: colors.textPrimary, fontWeight: 600 }}>
+          <Typography variant="h6" sx={{ color: colors.black3, fontWeight: 600 }}>
             Emails ({emails.length})
           </Typography>
           <IconButton onClick={fetchEmails} size="small">
@@ -158,10 +159,10 @@ export default function Home() {
                 onClick={() => handleEmailSelect(email)}
                 sx={{
                   cursor: 'pointer',
-                  bgcolor: selectedEmail?.id === email.id ? `${colors.primary}15` : 'transparent',
-                  borderLeft: selectedEmail?.id === email.id ? `3px solid ${colors.primary}` : '3px solid transparent',
+                  bgcolor: selectedEmail?.id === email.id ? `${colors.royalBlue}15` : 'transparent',
+                  borderLeft: selectedEmail?.id === email.id ? `3px solid ${colors.royalBlue}` : '3px solid transparent',
                   '&:hover': {
-                    bgcolor: `${colors.primary}08`,
+                    bgcolor: `${colors.royalBlue}08`,
                   },
                   px: 2,
                   py: 1.5,
@@ -174,7 +175,7 @@ export default function Home() {
                         variant="subtitle2" 
                         sx={{ 
                           fontWeight: 600,
-                          color: colors.textPrimary,
+                          color: colors.black3,
                           flex: 1,
                           mr: 1,
                         }}
@@ -186,7 +187,7 @@ export default function Home() {
                         onClick={(e) => handleDeleteEmail(email.id, e)}
                         sx={{ 
                           opacity: 0.6,
-                          '&:hover': { opacity: 1, color: colors.danger }
+                          '&:hover': { opacity: 1, color: '#E74C3C' }
                         }}
                       >
                         <DeleteIcon fontSize="small" />
@@ -197,19 +198,19 @@ export default function Home() {
                     <Box>
                       <Typography 
                         variant="body2" 
-                        sx={{ color: colors.textSecondary, mb: 0.5 }}
+                        sx={{ color: colors.black4, mb: 0.5 }}
                       >
                         To: {truncateText(email.to, 25)}
                       </Typography>
                       <Typography 
                         variant="body2" 
-                        sx={{ color: colors.textSecondary, mb: 1 }}
+                        sx={{ color: colors.black4, mb: 1 }}
                       >
                         {truncateText(email.body, 60)}
                       </Typography>
                       <Typography 
                         variant="caption" 
-                        sx={{ color: colors.textSecondary }}
+                        sx={{ color: colors.black4 }}
                       >
                         {formatDate(email.created_at)}
                       </Typography>
@@ -230,28 +231,28 @@ export default function Home() {
             m: 2, 
             p: 3,
             borderRadius: 3,
-            bgcolor: colors.background,
+            bgcolor: colors.white,
           }}>
             <Box sx={{ mb: 3 }}>
-              <Typography variant="h5" sx={{ color: colors.textPrimary, fontWeight: 600, mb: 2 }}>
+              <Typography variant="h5" sx={{ color: colors.black3, fontWeight: 600, mb: 2 }}>
                 {selectedEmail.subject}
               </Typography>
               
               <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" sx={{ color: colors.textSecondary, mb: 0.5 }}>
+                <Typography variant="body2" sx={{ color: colors.black4, mb: 0.5 }}>
                   <strong>To:</strong> {selectedEmail.to}
                 </Typography>
                 {selectedEmail.cc && (
-                  <Typography variant="body2" sx={{ color: colors.textSecondary, mb: 0.5 }}>
+                  <Typography variant="body2" sx={{ color: colors.black4, mb: 0.5 }}>
                     <strong>CC:</strong> {selectedEmail.cc}
                   </Typography>
                 )}
                 {selectedEmail.bcc && (
-                  <Typography variant="body2" sx={{ color: colors.textSecondary, mb: 0.5 }}>
+                  <Typography variant="body2" sx={{ color: colors.black4, mb: 0.5 }}>
                     <strong>BCC:</strong> {selectedEmail.bcc}
                   </Typography>
                 )}
-                <Typography variant="body2" sx={{ color: colors.textSecondary }}>
+                <Typography variant="body2" sx={{ color: colors.black4 }}>
                   <strong>Date:</strong> {formatDate(selectedEmail.created_at)}
                 </Typography>
               </Box>
@@ -262,7 +263,7 @@ export default function Home() {
             <Typography 
               variant="body1" 
               sx={{ 
-                color: colors.textPrimary,
+                color: colors.black3,
                 lineHeight: 1.7,
                 whiteSpace: 'pre-wrap',
               }}
@@ -276,7 +277,7 @@ export default function Home() {
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
-            color: colors.textSecondary,
+            color: colors.black4,
           }}>
             <Typography variant="h6">
               Select an email to view its content
@@ -293,9 +294,9 @@ export default function Home() {
           position: 'fixed',
           bottom: 24,
           right: 24,
-          bgcolor: colors.primary,
+          bgcolor: colors.royalBlue,
           '&:hover': {
-            bgcolor: colors.secondary,
+            bgcolor: colors.violet,
           },
         }}
       >

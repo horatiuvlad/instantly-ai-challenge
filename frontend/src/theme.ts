@@ -3,18 +3,18 @@ import { createTheme } from '@mui/material/styles';
 export const theme = createTheme({
   palette: {
     primary: {
-      main: '#5B63F6',
+      main: '#1179fc', // royal-blue
     },
     secondary: {
-      main: '#7A3CFB',
+      main: '#dc82fc', // violet
     },
     background: {
-      default: '#FFFFFF',
-      paper: '#F9FAFB',
+      default: '#ffffff', // white
+      paper: '#f6f8fb', // white-smoke
     },
     text: {
-      primary: '#0F1117',
-      secondary: '#6B7280',
+      primary: '#0f0f0f', // black-3
+      secondary: '#0f0f0f99', // black-4
     },
     success: {
       main: '#2ECC71',
@@ -23,7 +23,7 @@ export const theme = createTheme({
       main: '#E74C3C',
     },
     info: {
-      main: '#1ED6FF',
+      main: '#1179fc', // royal-blue
     },
   },
   typography: {
@@ -49,13 +49,15 @@ export const theme = createTheme({
 });
 
 export const colors = {
-  primary: '#5B63F6',
-  secondary: '#7A3CFB',
-  accent: '#1ED6FF',
-  background: '#FFFFFF',
-  surface: '#F9FAFB',
-  textPrimary: '#0F1117',
-  textSecondary: '#6B7280',
-  success: '#2ECC71',
-  danger: '#E74C3C',
+  black: '#000000',
+  black3: '#0f0f0f',
+  royalBlue: '#1179fc',
+  white: '#ffffff',
+  black4: '#0f0f0f99',
+  black2: '#050917',
+  white2: '#ffffff40',
+  black5: '#0f0f0fa6',
+  violet: '#dc82fc',
+  violet2: '#dd83fc',
+  whiteSmoke: '#f6f8fb',
 };
