@@ -1,10 +1,11 @@
-import "@/styles/globals.css";
+import '@/styles/globals.css';
 import Head from 'next/head';
 import Link from 'next/link';
 import EmailIcon from '@mui/icons-material/Email';
-import {AccountBox} from '@mui/icons-material';
+import { AccountBox } from '@mui/icons-material';
+import type { AppProps } from 'next/app';
 
-export default function App({ Component, pageProps }) {
+export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
