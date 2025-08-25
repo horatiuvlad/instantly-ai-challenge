@@ -1,18 +1,11 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { generateRequestSchema } from '../../types';
-// @ts-expect-error: no types for zod-to-json-schema
-import { zodToJsonSchema } from 'zod-to-json-schema';
-import { z } from 'zod';
 import OpenAI from 'openai';
-import dotenv from 'dotenv';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const generateApi: FastifyPluginAsync = async (fastify): Promise<void> => {
   fastify.post('/api/generate', {
-    schema: {
-      body: zodToJsonSchema(generateRequestSchema),
-    },
     handler: async (request, reply) => {
       const parse = generateRequestSchema.safeParse(request.body);
       if (!parse.success) {

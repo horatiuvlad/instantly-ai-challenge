@@ -1,20 +1,11 @@
 import type { FastifyPluginAsync } from 'fastify';
-import { routeRequestSchema, routeResponseSchema } from '../../types';
-// @ts-expect-error: no types for zod-to-json-schema
-import { zodToJsonSchema } from 'zod-to-json-schema';
-import { z } from 'zod';
+import { routeRequestSchema } from '../../types';
 import OpenAI from 'openai';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const routeApi: FastifyPluginAsync = async (fastify): Promise<void> => {
   fastify.post('/api/route', {
-    schema: {
-      body: zodToJsonSchema(routeRequestSchema),
-      response: {
-        200: zodToJsonSchema(routeResponseSchema),
-      },
-    },
     handler: async (request, reply) => {
       const parse = routeRequestSchema.safeParse(request.body);
       if (!parse.success) {

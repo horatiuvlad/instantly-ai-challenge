@@ -22,6 +22,17 @@ export const createEmailInputSchema = z.object({
 });
 export type CreateEmailInput = z.infer<typeof createEmailInputSchema>;
 
+// UpdateEmailInput: all fields optional; require at least one key
+export const updateEmailInputSchema = createEmailInputSchema
+  .partial()
+  .refine((data) => Object.keys(data).length > 0, {
+    message: 'At least one field must be provided',
+  });
+export type UpdateEmailInput = z.infer<typeof updateEmailInputSchema>;
+
+// Common param schema for id
+export const idParamSchema = z.object({ id: z.coerce.number().int().positive() });
+
 // DTOs
 export const routeRequestSchema = z.object({
   email: createEmailInputSchema,
