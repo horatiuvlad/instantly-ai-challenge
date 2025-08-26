@@ -109,14 +109,16 @@ export default function Home() {
       display: 'flex', 
       height: '100vh', 
       bgcolor: theme.palette.background.default,
-      marginLeft: '60px', // Account for the left sidebar
-      gap: 2,
-      p: 2,
+      marginLeft: { xs: 0, sm: '50px', md: '60px' }, // Responsive sidebar margin
+      marginTop: { xs: '60px', sm: 0 }, // Top margin for mobile horizontal sidebar
+      gap: { xs: 1, sm: 2 },
+      p: { xs: 1, sm: 2 },
+      flexDirection: { xs: 'column', md: 'row' }, // Stack vertically on mobile
     }}>
       {/* Email Sidebar Card */}
       <Card sx={{ 
-        width: 400, 
-        height: 'calc(100vh - 32px)',
+        width: { xs: '100%', md: 400 }, 
+        height: { xs: '40vh', md: 'calc(100vh - 32px)' }, // Responsive height
         display: 'flex',
         flexDirection: 'column',
       }}>
@@ -224,11 +226,22 @@ export default function Home() {
       </Card>
 
       {/* Main Content Card */}
-      <Card sx={{ flex: 1, height: 'calc(100vh - 32px)' }}>
+      <Card sx={{ 
+        flex: 1, 
+        height: { xs: '55vh', md: 'calc(100vh - 32px)' }, // Responsive height
+        minHeight: { xs: '300px', md: 'auto' },
+      }}>
         {selectedEmail ? (
           <CardContent sx={{ height: '100%', overflow: 'auto' }}>
             <Box sx={{ mb: 3 }}>
-              <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
+              <Typography 
+                variant="h5" 
+                sx={{ 
+                  fontWeight: 600, 
+                  mb: 2,
+                  fontSize: { xs: '1.25rem', md: '1.5rem' } // Responsive font size
+                }}
+              >
                 {selectedEmail.subject}
               </Typography>
               
@@ -259,6 +272,7 @@ export default function Home() {
               sx={{ 
                 lineHeight: 1.7,
                 whiteSpace: 'pre-wrap',
+                fontSize: { xs: '0.875rem', md: '1rem' }, // Responsive font size
               }}
             >
               {selectedEmail.body}
@@ -271,7 +285,12 @@ export default function Home() {
             alignItems: 'center', 
             justifyContent: 'center',
           }}>
-            <Typography variant="h6" color="text.secondary">
+            <Typography 
+              variant="h6" 
+              color="text.secondary" 
+              textAlign="center"
+              sx={{ fontSize: { xs: '1rem', md: '1.25rem' } }} // Responsive font size
+            >
               Select an email to view its content
             </Typography>
           </CardContent>
@@ -284,8 +303,9 @@ export default function Home() {
         onClick={() => setIsComposeModalOpen(true)}
         sx={{
           position: 'fixed',
-          bottom: 24,
-          right: 24,
+          bottom: { xs: 16, md: 24 },
+          right: { xs: 16, md: 24 },
+          zIndex: 1000,
         }}
       >
         <EditIcon />

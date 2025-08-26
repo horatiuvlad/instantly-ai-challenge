@@ -171,10 +171,13 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
       onClose={handleClose} 
       maxWidth="md" 
       fullWidth
+      fullScreen={false} // For mobile, we'll use responsive design instead of fullscreen
       PaperProps={{
         sx: {
-          borderRadius: 3,
-          maxHeight: '90vh',
+          borderRadius: { xs: 0, sm: 3 },
+          maxHeight: { xs: '100vh', sm: '90vh' },
+          margin: { xs: 0, sm: 2 },
+          maxWidth: '600px',
         }
       }}
     >
@@ -192,8 +195,8 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ pt: 3 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <DialogContent sx={{ pt: { xs: 2, sm: 3 } }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 1.5, sm: 2 } }}>
           {error && (
             <Alert severity="error" onClose={() => setError(null)}>
               {error}
@@ -246,7 +249,7 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
             onChange={handleInputChange('body')}
             fullWidth
             multiline
-            rows={8}
+            rows={6}
             placeholder="Email content..."
             error={!!validationErrors.body}
             helperText={validationErrors.body}
@@ -268,7 +271,7 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
                   rows={2}
                   disabled={isGenerating}
                 />
-                <Box sx={{ mt: 2, display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                <Box sx={{ mt: 2, display: 'flex', gap: 1, justifyContent: 'flex-end', flexDirection: { xs: 'column', sm: 'row' } }}>
                   <Button
                     onClick={() => {
                       setIsAIMode(false);
@@ -276,6 +279,7 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
                     }}
                     disabled={isGenerating}
                     startIcon={<CancelIcon />}
+                    sx={{ width: { xs: '100%', sm: 'auto' } }}
                   >
                     Cancel
                   </Button>
@@ -285,6 +289,7 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
                     variant="contained"
                     color="primary"
                     startIcon={isGenerating ? <CircularProgress size={16} /> : <AIIcon />}
+                    sx={{ width: { xs: '100%', sm: 'auto' } }}
                   >
                     {isGenerating ? 'Generating...' : 'Generate'}
                   </Button>
@@ -296,10 +301,12 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
       </DialogContent>
 
       <DialogActions sx={{ 
-        px: 3, 
-        pb: 3, 
+        px: { xs: 2, sm: 3 }, 
+        pb: { xs: 2, sm: 3 }, 
         bgcolor: theme.palette.background.paper,
         justifyContent: 'space-between',
+        flexDirection: { xs: 'column', sm: 'row' },
+        gap: { xs: 2, sm: 0 },
       }}>
         <Button
           onClick={() => setIsAIMode(true)}
@@ -307,14 +314,16 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
           startIcon={<AIIcon />}
           variant="outlined"
           color="primary"
+          sx={{ width: { xs: '100%', sm: 'auto' } }}
         >
           AI ✨
         </Button>
 
-        <Box sx={{ display: 'flex', gap: 1 }}>
+        <Box sx={{ display: 'flex', gap: 1, width: { xs: '100%', sm: 'auto' }, flexDirection: { xs: 'column', sm: 'row' } }}>
           <Button 
             onClick={handleClose}
             disabled={isGenerating || isSending}
+            sx={{ width: { xs: '100%', sm: 'auto' } }}
           >
             Cancel
           </Button>
@@ -324,6 +333,7 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
             color="primary"
             disabled={isGenerating || isSending}
             startIcon={isSending ? <CircularProgress size={16} /> : <SendIcon />}
+            sx={{ width: { xs: '100%', sm: 'auto' } }}
           >
             {isSending ? 'Sending...' : 'Send'}
           </Button>
