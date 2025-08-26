@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Paper,
+  Card,
+  CardContent,
   List,
   ListItem,
   ListItemText,
@@ -10,8 +11,8 @@ import {
   Divider,
   CircularProgress,
   Alert,
-  Chip,
   IconButton,
+  useTheme,
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -21,7 +22,6 @@ import {
 import { ComposeEmailModal } from '../components/ComposeEmailModal';
 import { EmailService } from '../services/emailService';
 import { Email } from '../types/email';
-import { colors } from '../theme';
 
 export default function Home() {
   const [emails, setEmails] = useState<Email[]>([]);
@@ -29,6 +29,7 @@ export default function Home() {
   const [isComposeModalOpen, setIsComposeModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const theme = useTheme();
 
   const fetchEmails = async () => {
     try {
@@ -107,33 +108,32 @@ export default function Home() {
     <Box sx={{ 
       display: 'flex', 
       height: '100vh', 
-      bgcolor: colors.white,
+      bgcolor: theme.palette.background.default,
       marginLeft: '60px', // Account for the left sidebar
+      gap: 2,
+      p: 2,
     }}>
-      {/* Email Sidebar */}
-      <Paper sx={{ 
+      {/* Email Sidebar Card */}
+      <Card sx={{ 
         width: 400, 
-        height: '100vh',
-        borderRadius: 0,
-        bgcolor: colors.whiteSmoke,
-        borderRight: `1px solid ${colors.black4}`,
+        height: 'calc(100vh - 32px)',
         display: 'flex',
         flexDirection: 'column',
       }}>
-        <Box sx={{ 
-          p: 2, 
-          borderBottom: `1px solid ${colors.black4}`,
+        <CardContent sx={{ 
+          borderBottom: `1px solid ${theme.palette.divider}`,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          pb: 2,
         }}>
-          <Typography variant="h6" sx={{ color: colors.black3, fontWeight: 600 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>
             Emails ({emails.length})
           </Typography>
           <IconButton onClick={fetchEmails} size="small">
             <RefreshIcon />
           </IconButton>
-        </Box>
+        </CardContent>
 
         {error && (
           <Alert severity="error" sx={{ m: 2 }}>
@@ -141,118 +141,112 @@ export default function Home() {
           </Alert>
         )}
 
-        {isLoading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-            <CircularProgress />
-          </Box>
-        ) : emails.length === 0 ? (
-          <Box sx={{ p: 4, textAlign: 'center' }}>
-            <Typography variant="body2" color="text.secondary">
-              No emails yet. Compose your first email!
-            </Typography>
-          </Box>
-        ) : (
-          <List sx={{ flex: 1, overflow: 'auto', p: 0 }}>
-            {emails.map((email) => (
-              <ListItem
-                key={email.id}
-                onClick={() => handleEmailSelect(email)}
-                sx={{
-                  cursor: 'pointer',
-                  bgcolor: selectedEmail?.id === email.id ? `${colors.royalBlue}15` : 'transparent',
-                  borderLeft: selectedEmail?.id === email.id ? `3px solid ${colors.royalBlue}` : '3px solid transparent',
-                  '&:hover': {
-                    bgcolor: `${colors.royalBlue}08`,
-                  },
-                  px: 2,
-                  py: 1.5,
-                }}
-              >
-                <ListItemText
-                  primary={
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <Typography 
-                        variant="subtitle2" 
-                        sx={{ 
-                          fontWeight: 600,
-                          color: colors.black3,
-                          flex: 1,
-                          mr: 1,
-                        }}
-                      >
-                        {truncateText(email.subject, 30)}
-                      </Typography>
-                      <IconButton
-                        size="small"
-                        onClick={(e) => handleDeleteEmail(email.id, e)}
-                        sx={{ 
-                          opacity: 0.6,
-                          '&:hover': { opacity: 1, color: '#E74C3C' }
-                        }}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Box>
-                  }
-                  secondary={
-                    <Box>
-                      <Typography 
-                        variant="body2" 
-                        sx={{ color: colors.black4, mb: 0.5 }}
-                      >
-                        To: {truncateText(email.to, 25)}
-                      </Typography>
-                      <Typography 
-                        variant="body2" 
-                        sx={{ color: colors.black4, mb: 1 }}
-                      >
-                        {truncateText(email.body, 60)}
-                      </Typography>
-                      <Typography 
-                        variant="caption" 
-                        sx={{ color: colors.black4 }}
-                      >
-                        {formatDate(email.created_at)}
-                      </Typography>
-                    </Box>
-                  }
-                />
-              </ListItem>
-            ))}
-          </List>
-        )}
-      </Paper>
+        <CardContent sx={{ flex: 1, overflow: 'hidden', p: 0 }}>
+          {isLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : emails.length === 0 ? (
+            <Box sx={{ p: 4, textAlign: 'center' }}>
+              <Typography variant="body2" color="text.secondary">
+                No emails yet. Compose your first email!
+              </Typography>
+            </Box>
+          ) : (
+            <List sx={{ height: '100%', overflow: 'auto', p: 0 }}>
+              {emails.map((email) => (
+                <ListItem
+                  key={email.id}
+                  onClick={() => handleEmailSelect(email)}
+                  sx={{
+                    cursor: 'pointer',
+                    bgcolor: selectedEmail?.id === email.id ? theme.palette.action.selected : 'transparent',
+                    '&:hover': {
+                      bgcolor: theme.palette.action.hover,
+                    },
+                    px: 2,
+                    py: 1.5,
+                  }}
+                >
+                  <ListItemText
+                    primary={
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <Typography 
+                          variant="subtitle2" 
+                          sx={{ 
+                            fontWeight: 600,
+                            flex: 1,
+                            mr: 1,
+                          }}
+                        >
+                          {truncateText(email.subject, 30)}
+                        </Typography>
+                        <IconButton
+                          size="small"
+                          onClick={(e) => handleDeleteEmail(email.id, e)}
+                          sx={{ 
+                            opacity: 0.6,
+                            '&:hover': { opacity: 1, color: 'error.main' }
+                          }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
+                    }
+                    secondary={
+                      <Box>
+                        <Typography 
+                          variant="body2" 
+                          sx={{ color: 'text.secondary', mb: 0.5 }}
+                        >
+                          To: {truncateText(email.to, 25)}
+                        </Typography>
+                        <Typography 
+                          variant="body2" 
+                          sx={{ color: 'text.secondary', mb: 1 }}
+                        >
+                          {truncateText(email.body, 60)}
+                        </Typography>
+                        <Typography 
+                          variant="caption" 
+                          sx={{ color: 'text.secondary' }}
+                        >
+                          {formatDate(email.created_at)}
+                        </Typography>
+                      </Box>
+                    }
+                  />
+                </ListItem>
+              ))}
+            </List>
+          )}
+        </CardContent>
+      </Card>
 
-      {/* Main Content */}
-      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      {/* Main Content Card */}
+      <Card sx={{ flex: 1, height: 'calc(100vh - 32px)' }}>
         {selectedEmail ? (
-          <Paper sx={{ 
-            flex: 1, 
-            m: 2, 
-            p: 3,
-            borderRadius: 3,
-            bgcolor: colors.white,
-          }}>
+          <CardContent sx={{ height: '100%', overflow: 'auto' }}>
             <Box sx={{ mb: 3 }}>
-              <Typography variant="h5" sx={{ color: colors.black3, fontWeight: 600, mb: 2 }}>
+              <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
                 {selectedEmail.subject}
               </Typography>
               
               <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" sx={{ color: colors.black4, mb: 0.5 }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
                   <strong>To:</strong> {selectedEmail.to}
                 </Typography>
                 {selectedEmail.cc && (
-                  <Typography variant="body2" sx={{ color: colors.black4, mb: 0.5 }}>
+                  <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
                     <strong>CC:</strong> {selectedEmail.cc}
                   </Typography>
                 )}
                 {selectedEmail.bcc && (
-                  <Typography variant="body2" sx={{ color: colors.black4, mb: 0.5 }}>
+                  <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
                     <strong>BCC:</strong> {selectedEmail.bcc}
                   </Typography>
                 )}
-                <Typography variant="body2" sx={{ color: colors.black4 }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                   <strong>Date:</strong> {formatDate(selectedEmail.created_at)}
                 </Typography>
               </Box>
@@ -263,28 +257,26 @@ export default function Home() {
             <Typography 
               variant="body1" 
               sx={{ 
-                color: colors.black3,
                 lineHeight: 1.7,
                 whiteSpace: 'pre-wrap',
               }}
             >
               {selectedEmail.body}
             </Typography>
-          </Paper>
+          </CardContent>
         ) : (
-          <Box sx={{ 
-            flex: 1, 
+          <CardContent sx={{ 
+            height: '100%',
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
-            color: colors.black4,
           }}>
-            <Typography variant="h6">
+            <Typography variant="h6" color="text.secondary">
               Select an email to view its content
             </Typography>
-          </Box>
+          </CardContent>
         )}
-      </Box>
+      </Card>
 
       {/* Compose FAB */}
       <Fab
@@ -294,10 +286,6 @@ export default function Home() {
           position: 'fixed',
           bottom: 24,
           right: 24,
-          bgcolor: colors.royalBlue,
-          '&:hover': {
-            bgcolor: colors.violet,
-          },
         }}
       >
         <EditIcon />

@@ -11,6 +11,9 @@ import {
   CircularProgress,
   Collapse,
   Alert,
+  Card,
+  CardContent,
+  useTheme,
 } from '@mui/material';
 import {
   Close as CloseIcon,
@@ -20,7 +23,6 @@ import {
 } from '@mui/icons-material';
 import { EmailService } from '../services/emailService';
 import { CreateEmailData } from '../types/email';
-import { colors } from '../theme';
 import { validateEmail, validateEmailField } from '../utils/emailValidation';
 
 interface ComposeEmailModalProps {
@@ -34,6 +36,7 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
   onClose,
   onEmailSent,
 }) => {
+  const theme = useTheme();
   const [formData, setFormData] = useState<CreateEmailData>({
     to: '',
     cc: '',
@@ -179,7 +182,7 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center',
-        bgcolor: colors.whiteSmoke,
+        bgcolor: theme.palette.background.paper,
         borderBottom: 1,
         borderColor: 'divider',
       }}>
@@ -250,44 +253,44 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
           />
 
           <Collapse in={isAIMode}>
-            <Box sx={{ 
-              p: 2, 
-              bgcolor: colors.whiteSmoke, 
-              borderRadius: 2,
-              border: `1px solid ${colors.royalBlue}`,
+            <Card sx={{ 
+              border: `1px solid ${theme.palette.primary.main}`,
+              bgcolor: theme.palette.background.paper,
             }}>
-              <TextField
-                label="Describe what the email should be about"
-                value={aiPrompt}
-                onChange={(e) => setAIPrompt(e.target.value)}
-                fullWidth
-                placeholder="e.g., Meeting request for Tuesday, Follow-up on proposal..."
-                multiline
-                rows={2}
-                disabled={isGenerating}
-              />
-              <Box sx={{ mt: 2, display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                <Button
-                  onClick={() => {
-                    setIsAIMode(false);
-                    setAIPrompt('');
-                  }}
+              <CardContent>
+                <TextField
+                  label="Describe what the email should be about"
+                  value={aiPrompt}
+                  onChange={(e) => setAIPrompt(e.target.value)}
+                  fullWidth
+                  placeholder="e.g., Meeting request for Tuesday, Follow-up on proposal..."
+                  multiline
+                  rows={2}
                   disabled={isGenerating}
-                  startIcon={<CancelIcon />}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleAIGenerate}
-                  disabled={isGenerating || !aiPrompt.trim()}
-                  variant="contained"
-                  startIcon={isGenerating ? <CircularProgress size={16} /> : <AIIcon />}
-                  sx={{ bgcolor: colors.royalBlue }}
-                >
-                  {isGenerating ? 'Generating...' : 'Generate'}
-                </Button>
-              </Box>
-            </Box>
+                />
+                <Box sx={{ mt: 2, display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                  <Button
+                    onClick={() => {
+                      setIsAIMode(false);
+                      setAIPrompt('');
+                    }}
+                    disabled={isGenerating}
+                    startIcon={<CancelIcon />}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleAIGenerate}
+                    disabled={isGenerating || !aiPrompt.trim()}
+                    variant="contained"
+                    color="primary"
+                    startIcon={isGenerating ? <CircularProgress size={16} /> : <AIIcon />}
+                  >
+                    {isGenerating ? 'Generating...' : 'Generate'}
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
           </Collapse>
         </Box>
       </DialogContent>
@@ -295,20 +298,15 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
       <DialogActions sx={{ 
         px: 3, 
         pb: 3, 
-        bgcolor: colors.whiteSmoke,
+        bgcolor: theme.palette.background.paper,
         justifyContent: 'space-between',
       }}>
         <Button
           onClick={() => setIsAIMode(true)}
           disabled={isAIMode || isGenerating || isSending}
           startIcon={<AIIcon />}
-          sx={{ 
-            color: colors.royalBlue,
-            border: `1px solid ${colors.royalBlue}`,
-            '&:hover': {
-              bgcolor: `${colors.royalBlue}10`,
-            }
-          }}
+          variant="outlined"
+          color="primary"
         >
           AI ✨
         </Button>
@@ -323,9 +321,9 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
           <Button
             onClick={handleSendEmail}
             variant="contained"
+            color="primary"
             disabled={isGenerating || isSending}
             startIcon={isSending ? <CircularProgress size={16} /> : <SendIcon />}
-            sx={{ bgcolor: colors.royalBlue }}
           >
             {isSending ? 'Sending...' : 'Send'}
           </Button>
