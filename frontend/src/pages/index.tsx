@@ -25,7 +25,9 @@ import { Email } from '../types/email';
 
 export default function Home() {
   const [emails, setEmails] = useState<Email[]>([]);
-  const [selectedEmail, setSelectedEmail] = useState<Email | undefined>(undefined);
+  const [selectedEmail, setSelectedEmail] = useState<Email | undefined>(
+    undefined
+  );
   const [isComposeModalOpen, setIsComposeModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | undefined>(undefined);
@@ -36,7 +38,7 @@ export default function Home() {
       setError(undefined);
       const emailsData = await EmailService.getEmails();
       setEmails(emailsData);
-      
+
       // Auto-select the first email if none selected and we have emails
       if (emailsData.length > 0) {
         setSelectedEmail(emailsData[0]);
@@ -54,7 +56,7 @@ export default function Home() {
         setError(undefined);
         const emailsData = await EmailService.getEmails();
         setEmails(emailsData);
-        
+
         // Auto-select the first email if none selected and we have emails
         if (emailsData.length > 0) {
           setSelectedEmail(emailsData[0]);
@@ -77,9 +79,12 @@ export default function Home() {
     fetchEmails();
   };
 
-  const handleDeleteEmail = async (emailId: number, event: React.MouseEvent) => {
+  const handleDeleteEmail = async (
+    emailId: number,
+    event: React.MouseEvent
+  ) => {
     event.stopPropagation();
-    
+
     try {
       await EmailService.deleteEmail(emailId);
       if (selectedEmail?.id === emailId) {
@@ -93,10 +98,14 @@ export default function Home() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
+    return (
+      date.toLocaleDateString() +
+      ' ' +
+      date.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    );
   };
 
   const truncateText = (text: string, maxLength: number) => {
@@ -105,28 +114,34 @@ export default function Home() {
   };
 
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      height: '100%',
-      bgcolor: theme.palette.background.default,
-      gap: { xs: 1, sm: 2 },
-      p: { xs: 1, sm: 2 },
-      flexDirection: { xs: 'column', md: 'row' }, // Stack vertically on mobile
-    }}>
-      {/* Email Sidebar Card */}
-      <Card sx={{ 
-        width: { xs: '100%', md: 400 }, 
-        height: { xs: '40vh', md: 'calc(100vh - 32px)' }, // Responsive height
+    <Box
+      sx={{
         display: 'flex',
-        flexDirection: 'column',
-      }}>
-        <CardContent sx={{ 
-          borderBottom: `1px solid ${theme.palette.divider}`,
+        height: '100%',
+        bgcolor: theme.palette.background.default,
+        gap: { xs: 1, sm: 2 },
+        p: { xs: 1, sm: 2 },
+        flexDirection: { xs: 'column', md: 'row' }, // Stack vertically on mobile
+      }}
+    >
+      {/* Email Sidebar Card */}
+      <Card
+        sx={{
+          width: { xs: '100%', md: 400 },
+          height: { xs: '40vh', md: 'calc(100vh - 32px)' }, // Responsive height
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          pb: 2,
-        }}>
+          flexDirection: 'column',
+        }}
+      >
+        <CardContent
+          sx={{
+            borderBottom: `1px solid ${theme.palette.divider}`,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            pb: 2,
+          }}
+        >
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
             Emails ({emails.length})
           </Typography>
@@ -141,7 +156,9 @@ export default function Home() {
           </Alert>
         )}
 
-        <CardContent sx={{ flex: 1, overflow: 'hidden', pl: 2, pr: 2, pt: 2, pb: 0 }}>
+        <CardContent
+          sx={{ flex: 1, overflow: 'hidden', pl: 2, pr: 2, pt: 2, pb: 0 }}
+        >
           {isLoading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
               <CircularProgress />
@@ -160,7 +177,10 @@ export default function Home() {
                   onClick={() => handleEmailSelect(email)}
                   sx={{
                     cursor: 'pointer',
-                    bgcolor: selectedEmail?.id === email.id ? theme.palette.action.selected : 'transparent',
+                    bgcolor:
+                      selectedEmail?.id === email.id
+                        ? theme.palette.action.selected
+                        : 'transparent',
                     '&:hover': {
                       bgcolor: theme.palette.action.hover,
                     },
@@ -170,10 +190,16 @@ export default function Home() {
                 >
                   <ListItemText
                     primary={
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <Typography 
-                          variant="subtitle2" 
-                          sx={{ 
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'flex-start',
+                        }}
+                      >
+                        <Typography
+                          variant="subtitle2"
+                          sx={{
                             fontWeight: 600,
                             flex: 1,
                             mr: 1,
@@ -184,9 +210,9 @@ export default function Home() {
                         <IconButton
                           size="small"
                           onClick={(e) => handleDeleteEmail(email.id, e)}
-                          sx={{ 
+                          sx={{
                             opacity: 0.6,
-                            '&:hover': { opacity: 1, color: 'error.main' }
+                            '&:hover': { opacity: 1, color: 'error.main' },
                           }}
                         >
                           <DeleteIcon fontSize="small" />
@@ -195,20 +221,20 @@ export default function Home() {
                     }
                     secondary={
                       <Box>
-                        <Typography 
-                          variant="body2" 
+                        <Typography
+                          variant="body2"
                           sx={{ color: 'text.secondary', mb: 0.5 }}
                         >
                           To: {truncateText(email.to, 25)}
                         </Typography>
-                        <Typography 
-                          variant="body2" 
+                        <Typography
+                          variant="body2"
                           sx={{ color: 'text.secondary', mb: 1 }}
                         >
                           {truncateText(email.body, 60)}
                         </Typography>
-                        <Typography 
-                          variant="caption" 
+                        <Typography
+                          variant="caption"
                           sx={{ color: 'text.secondary' }}
                         >
                           {formatDate(email.created_at)}
@@ -224,36 +250,47 @@ export default function Home() {
       </Card>
 
       {/* Main Content Card */}
-      <Card sx={{ 
-        flex: 1, 
-        height: { xs: '55vh', md: 'calc(100vh - 32px)' }, // Responsive height
-        minHeight: { xs: '300px', md: 'auto' },
-      }}>
+      <Card
+        sx={{
+          flex: 1,
+          height: { xs: '55vh', md: 'calc(100vh - 32px)' }, // Responsive height
+          minHeight: { xs: '300px', md: 'auto' },
+        }}
+      >
         {selectedEmail ? (
           <CardContent sx={{ height: '100%', overflow: 'auto' }}>
             <Box sx={{ mb: 3 }}>
-              <Typography 
-                variant="h5" 
-                sx={{ 
-                  fontWeight: 600, 
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 600,
                   mb: 2,
-                  fontSize: { xs: '1.25rem', md: '1.5rem' } // Responsive font size
+                  fontSize: { xs: '1.25rem', md: '1.5rem' }, // Responsive font size
                 }}
               >
                 {selectedEmail.subject}
               </Typography>
-              
+
               <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                <Typography
+                  variant="body2"
+                  sx={{ color: 'text.secondary', mb: 0.5 }}
+                >
                   <strong>To:</strong> {selectedEmail.to}
                 </Typography>
                 {selectedEmail.cc && (
-                  <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: 'text.secondary', mb: 0.5 }}
+                  >
                     <strong>CC:</strong> {selectedEmail.cc}
                   </Typography>
                 )}
                 {selectedEmail.bcc && (
-                  <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: 'text.secondary', mb: 0.5 }}
+                  >
                     <strong>BCC:</strong> {selectedEmail.bcc}
                   </Typography>
                 )}
@@ -265,9 +302,9 @@ export default function Home() {
               <Divider sx={{ my: 2 }} />
             </Box>
 
-            <Typography 
-              variant="body1" 
-              sx={{ 
+            <Typography
+              variant="body1"
+              sx={{
                 lineHeight: 1.7,
                 whiteSpace: 'pre-wrap',
                 fontSize: { xs: '0.875rem', md: '1rem' }, // Responsive font size
@@ -277,15 +314,17 @@ export default function Home() {
             </Typography>
           </CardContent>
         ) : (
-          <CardContent sx={{ 
-            height: '100%',
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-          }}>
-            <Typography 
-              variant="h6" 
-              color="text.secondary" 
+          <CardContent
+            sx={{
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Typography
+              variant="h6"
+              color="text.secondary"
               textAlign="center"
               sx={{ fontSize: { xs: '1rem', md: '1.25rem' } }} // Responsive font size
             >

@@ -33,7 +33,10 @@ export class EmailService {
     return response.json();
   }
 
-  static async updateEmail(id: number, emailData: Partial<CreateEmailData>): Promise<Email> {
+  static async updateEmail(
+    id: number,
+    emailData: Partial<CreateEmailData>
+  ): Promise<Email> {
     const response = await fetch(`${API_BASE_URL}/emails/${id}`, {
       method: 'PUT',
       headers: {
@@ -56,7 +59,9 @@ export class EmailService {
     }
   }
 
-  static async generateEmailWithAI(prompt: string): Promise<AIGenerationResponse> {
+  static async generateEmailWithAI(
+    prompt: string
+  ): Promise<AIGenerationResponse> {
     const response = await fetch(`${API_BASE_URL}/ai/generate-email`, {
       method: 'POST',
       headers: {

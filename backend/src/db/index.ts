@@ -28,11 +28,16 @@ export class DB {
     return knex('emails').where('id', id).first();
   }
 
-  static async createEmail(data: Omit<Email, 'id' | 'created_at' | 'updated_at'>): Promise<number[]> {
+  static async createEmail(
+    data: Omit<Email, 'id' | 'created_at' | 'updated_at'>
+  ): Promise<number[]> {
     return knex('emails').insert(data);
   }
 
-  static async updateEmail(id: number, data: Partial<Omit<Email, 'id' | 'created_at' | 'updated_at'>>): Promise<number> {
+  static async updateEmail(
+    id: number,
+    data: Partial<Omit<Email, 'id' | 'created_at' | 'updated_at'>>
+  ): Promise<number> {
     return knex('emails').where('id', id).update(data);
   }
 

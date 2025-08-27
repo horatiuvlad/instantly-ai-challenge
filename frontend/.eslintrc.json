@@ -1,6 +1,4 @@
 {
   "extends": "next/core-web-vitals",
-  "ignorePatterns": [
-    "src/pages/**/*.js"
-  ]
+  "ignorePatterns": ["src/pages/**/*.js"]
 }

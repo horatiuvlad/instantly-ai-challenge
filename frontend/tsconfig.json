@@ -16,25 +16,11 @@
     "jsx": "preserve",
     "allowJs": true,
     "incremental": true,
-    "types": [
-      "node",
-      "react",
-      "react-dom"
-    ],
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "types": ["node", "react", "react-dom"],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "noEmit": true,
     "isolatedModules": true
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
 }

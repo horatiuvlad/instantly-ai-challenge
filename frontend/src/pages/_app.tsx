@@ -28,7 +28,7 @@ export default function App({ Component, pageProps }: AppProps) {
         </Link>
       </div>
       <main>
-          <Component {...pageProps} />
+        <Component {...pageProps} />
       </main>
     </ThemeProvider>
   );
