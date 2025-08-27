@@ -24,6 +24,8 @@ import {
 import { EmailService } from '../services/emailService';
 import { CreateEmailData } from '../types/email';
 import { validateEmail, validateEmailField } from '../utils/emailValidation';
+import { theme } from '@/theme';
+import zIndex from '@mui/material/styles/zIndex';
 
 interface ComposeEmailModalProps {
   open: boolean;
@@ -171,6 +173,17 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
     onClose();
   };
 
+  const aiOverlayStyle = {
+    ...styles.aiOverlay,
+    ...styles.rainbowBorder,
+    ...(isGenerating && styles.rainbowBorderAnimated),
+  };
+
+  const aiOverlayWrapperStyle = {
+    ...styles.aiOverlayWrapper,
+    ...(isAIMode && styles.aiOverlayWrapperActive),
+  };
+
   return (
     <Dialog
       open={open}
@@ -184,6 +197,7 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
           maxHeight: { xs: '100vh', sm: '90vh' },
           margin: { xs: 0, sm: 2 },
           maxWidth: '600px',
+          position: 'relative',
         },
       }}
     >
@@ -272,93 +286,44 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
             error={!!validationErrors.body}
             helperText={validationErrors.body}
           />
-
-          <Collapse in={isAIMode}>
-            <Card
-              sx={{
-                border: `1px solid ${theme.palette.primary.main}`,
-                bgcolor: theme.palette.background.paper,
-              }}
-            >
-              <CardContent>
-                <TextField
-                  label="Describe what the email should be about"
-                  value={aiPrompt}
-                  onChange={(e) => setAIPrompt(e.target.value)}
-                  fullWidth
-                  placeholder="e.g., Meeting request for Tuesday, Follow-up on proposal..."
-                  multiline
-                  rows={2}
-                  disabled={isGenerating}
-                />
-                <Box
-                  sx={{
-                    mt: 2,
-                    display: 'flex',
-                    gap: 1,
-                    justifyContent: 'flex-end',
-                    flexDirection: { xs: 'column', sm: 'row' },
-                  }}
-                >
-                  <Button
-                    onClick={() => {
-                      setIsAIMode(false);
-                      setAIPrompt('');
-                    }}
-                    disabled={isGenerating}
-                    startIcon={<CancelIcon />}
-                    sx={{ width: { xs: '100%', sm: 'auto' } }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleAIGenerate}
-                    disabled={isGenerating || !aiPrompt.trim()}
-                    variant="contained"
-                    color="primary"
-                    startIcon={
-                      isGenerating ? <CircularProgress size={16} /> : <AIIcon />
-                    }
-                    sx={{ width: { xs: '100%', sm: 'auto' } }}
-                  >
-                    {isGenerating ? 'Generating...' : 'Generate'}
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
-          </Collapse>
         </Box>
       </DialogContent>
 
       <DialogActions
         sx={{
-          px: { xs: 2, sm: 3 },
+          mx: { xs: 2, sm: 3 },
+          px: 0,
           pb: { xs: 2, sm: 3 },
           bgcolor: theme.palette.background.paper,
           justifyContent: 'space-between',
           flexDirection: { xs: 'column', sm: 'row' },
           gap: { xs: 2, sm: 0 },
+          position: 'relative',
         }}
       >
-        <Button
-          onClick={() => setIsAIMode(true)}
-          disabled={isAIMode || isGenerating || isSending}
-          startIcon={<AIIcon />}
-          variant="outlined"
-          color="primary"
-          sx={{ width: { xs: '100%', sm: 'auto' } }}
-        >
-          AI ✨
-        </Button>
-
         <Box
           sx={{
             display: 'flex',
             gap: 1,
             width: { xs: '100%', sm: 'auto' },
             flexDirection: { xs: 'column', sm: 'row' },
+            flex: 1,
+            flexGrow: 1,
           }}
         >
+          <Button
+            onClick={() => setIsAIMode(true)}
+            disabled={isAIMode || isGenerating || isSending}
+            startIcon={<AIIcon />}
+            variant="text"
+            color="primary"
+            sx={{ width: { xs: '100%', sm: 'auto' }, ...styles.rainbowBorder }}
+          >
+            AI
+          </Button>
+
+          <Box sx={{ flexGrow: 1 }}></Box>
+
           <Button
             onClick={handleClose}
             disabled={isGenerating || isSending}
@@ -380,6 +345,113 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
           </Button>
         </Box>
       </DialogActions>
+
+      <Box sx={aiOverlayWrapperStyle}>
+        <Box sx={aiOverlayStyle}>
+          <TextField
+            value={aiPrompt}
+            onChange={(e) => setAIPrompt(e.target.value)}
+            fullWidth
+            placeholder="e.g., Meeting request for Tuesday, Follow-up on proposal..."
+            disabled={isGenerating}
+            variant="outlined"
+            sx={styles.aiOverlayTextField}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault(); // optional, prevents form submission
+                handleAIGenerate();
+              }
+            }}
+          />
+          <Button
+            onClick={() => {
+              setIsAIMode(false);
+              setAIPrompt('');
+            }}
+            disabled={isGenerating}
+            sx={{ width: { xs: '100%', sm: 'auto' } }}
+          >
+            Cancel
+          </Button>
+          <Box>
+            <Button
+              onClick={handleAIGenerate}
+              disabled={isGenerating || !aiPrompt.trim()}
+              variant="contained"
+              color="primary"
+              startIcon={<AIIcon />}
+              sx={{ width: { xs: '100%', sm: 'auto' } }}
+            >
+              Generate
+            </Button>
+          </Box>
+        </Box>
+      </Box>
     </Dialog>
   );
+};
+
+// Option 1:
+const styles = {
+  aiOverlayWrapper: {
+    display: 'none',
+    transition: 'all 0.5s ease-in-out',
+  },
+  aiOverlayWrapperActive: {
+    display: 'block',
+  },
+  aiOverlayTextField: {
+    borderColor: 'transparent',
+    '& .MuiOutlinedInput-root': {
+      height: '100%',
+      '& fieldset': {
+        border: 'none', // removes the border
+        alignItems: 'center',
+      },
+      '&:hover fieldset': {
+        border: 'none', // removes on hover
+      },
+      '&.Mui-focused fieldset': {
+        border: 'none', // removes on focus
+      },
+    },
+    '& .MuiInputBase-input': {
+      padding: 0, // remove extra padding
+    },
+  },
+  aiOverlay: {
+    position: 'absolute',
+    bottom: '22px',
+    left: '22px',
+    right: '22px',
+    height: '54px',
+    borderRadius: 0.75,
+    bgcolor: theme.palette.background.default,
+    display: 'flex',
+    flexDirection: { xs: 'column', sm: 'row' },
+    px: 1,
+    py: 1,
+    gap: 1,
+  },
+  rainbowBorder: {
+    background: `
+        linear-gradient(${theme.palette.background.default}, ${theme.palette.background.default}) padding-box,
+        linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe, #00f2fe) border-box
+      `,
+    border: '2px solid transparent',
+    backgroundSize: '400% 400%',
+  },
+  rainbowBorderAnimated: {
+    background: `
+        linear-gradient(${theme.palette.background.default}, ${theme.palette.background.default}) padding-box,
+        linear-gradient(45deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe, #00f2fe) border-box
+      `,
+    border: '2px solid transparent',
+    backgroundSize: '400% 400%',
+    animation: 'gradient-shift 3s ease infinite',
+    '@keyframes gradient-shift': {
+      '0%, 100%': { backgroundPosition: '0% 50%' },
+      '50%': { backgroundPosition: '100% 50%' },
+    },
+  },
 };
