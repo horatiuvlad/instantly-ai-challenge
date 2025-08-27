@@ -195,7 +195,7 @@ export const ComposeEmailModal: React.FC<ComposeEmailModalProps> = ({
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ pt: { xs: 2, sm: 3 } }}>
+      <DialogContent sx={{ mt: 3, overflow: "visible" }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 1.5, sm: 2 } }}>
           {error && (
             <Alert severity="error" onClose={() => setError(null)}>

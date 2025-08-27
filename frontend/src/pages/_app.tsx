@@ -7,6 +7,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { theme } from '@/theme';
 import type { AppProps } from 'next/app';
+import Box from '@mui/material/Box';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -27,7 +28,7 @@ export default function App({ Component, pageProps }: AppProps) {
         </Link>
       </div>
       <main>
-        <Component {...pageProps} />
+          <Component {...pageProps} />
       </main>
     </ThemeProvider>
   );

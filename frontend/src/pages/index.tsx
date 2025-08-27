@@ -25,15 +25,15 @@ import { Email } from '../types/email';
 
 export default function Home() {
   const [emails, setEmails] = useState<Email[]>([]);
-  const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
+  const [selectedEmail, setSelectedEmail] = useState<Email | undefined>(undefined);
   const [isComposeModalOpen, setIsComposeModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | undefined>(undefined);
   const theme = useTheme();
 
   const fetchEmails = async () => {
     try {
-      setError(null);
+      setError(undefined);
       const emailsData = await EmailService.getEmails();
       setEmails(emailsData);
       
@@ -51,7 +51,7 @@ export default function Home() {
   useEffect(() => {
     const fetchEmailsOnMount = async () => {
       try {
-        setError(null);
+        setError(undefined);
         const emailsData = await EmailService.getEmails();
         setEmails(emailsData);
         
@@ -83,7 +83,7 @@ export default function Home() {
     try {
       await EmailService.deleteEmail(emailId);
       if (selectedEmail?.id === emailId) {
-        setSelectedEmail(null);
+        setSelectedEmail(undefined);
       }
       fetchEmails();
     } catch (error) {
@@ -107,10 +107,8 @@ export default function Home() {
   return (
     <Box sx={{ 
       display: 'flex', 
-      height: '100vh', 
+      height: '100%',
       bgcolor: theme.palette.background.default,
-      marginLeft: { xs: 0, sm: '50px', md: '60px' }, // Responsive sidebar margin
-      marginTop: { xs: '60px', sm: 0 }, // Top margin for mobile horizontal sidebar
       gap: { xs: 1, sm: 2 },
       p: { xs: 1, sm: 2 },
       flexDirection: { xs: 'column', md: 'row' }, // Stack vertically on mobile
@@ -143,7 +141,7 @@ export default function Home() {
           </Alert>
         )}
 
-        <CardContent sx={{ flex: 1, overflow: 'hidden', p: 0 }}>
+        <CardContent sx={{ flex: 1, overflow: 'hidden', pl: 2, pr: 2, pt: 2, pb: 0 }}>
           {isLoading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
               <CircularProgress />
